@@ -18,14 +18,20 @@ placement = []
 for i in range(n):
     score = (
         cgpa[i] * 0.3 +
-        attendance[i] * 0.01 +
         coding[i] * 0.2 +
         aptitude[i] * 0.2 +
         communication[i] * 0.15 +
         projects[i] * 2 +
         internships[i] * 3
     )
-    placement.append('Placed' if score >= 35 else 'Not Placed')
+    # Realistic noise add பண்றோம்
+    noise = np.random.normal(0, 8)
+    final_score = score + noise
+
+    if final_score >= 38:
+        placement.append(1)
+    else:
+        placement.append(0)
 
 df = pd.DataFrame({
     'student_id'          : range(1, n+1),
@@ -38,9 +44,12 @@ df = pd.DataFrame({
     'communication_score' : communication,
     'projects_count'      : projects,
     'internships'         : internships,
-    'placement_status'    : placement
+    'placement_encoded'   : placement,
+    'placement_status'    : ['Placed' if p==1 else 'Not Placed' for p in placement]
 })
 
 df.to_csv('data/students.csv', index=False)
-print(f'✅ Dataset created! Total students: {len(df)}')
+df.to_csv('data/students_cleaned.csv', index=False)
+
+print(f'✅ Dataset created! Total: {len(df)}')
 print(df['placement_status'].value_counts())
